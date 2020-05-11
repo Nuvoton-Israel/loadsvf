@@ -1444,8 +1444,23 @@ XXR_common:
 				}
 
 				if (min_usec > 0) {
-					if (!svf_nil)
-						usleep(min_usec);
+					if (!svf_nil) {
+						uint32_t freq = 0;
+						if (frequency)
+							freq = frequency;
+						else if (svf_para.frequency)
+							freq = svf_para.frequency;
+						if (freq > 0) {
+							uint32_t num_cycles = freq * min_time;
+							if (num_cycles) {
+								LOG_DEBUG("JTAG_wait_cycles: %u\n", num_cycles);
+								JTAG_wait_cycles(jtag_handler, num_cycles);
+							}
+						} else {
+							LOG_DEBUG("sleep %lu usec\n", min_usec);
+							usleep(min_usec);
+						}
+					}
 				}
 
 				/* move to end_state if necessary */
