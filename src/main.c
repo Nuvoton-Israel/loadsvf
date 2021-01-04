@@ -13,16 +13,13 @@
 
 #define JTAG_FREQ	(10 * 1000000)
 #define LOG_LEVEL	2
+#define JTAG_MODE_SPI	0
+#define JTAG_MODE_GPIO	1
 int loglevel = LOG_LEVEL;
 unsigned int frequency = 0;
 int step = 0;
 
-/* transfer mode
- * bit mask:
- *   bit 0: PSPI
- *   bit 1: directGPIO
- */
-static int mode = 3;  /* default transfer mode */
+static int mode = JTAG_MODE_SPI;  /* default transfer mode */
 char *svf_path = NULL;
 char *jtag_dev = NULL;
 static JTAG_Handler* jtag_handler = NULL;
@@ -46,9 +43,8 @@ void showUsage(char **argv)
 	fprintf(stderr, "  -d <device>   jtag device\n");
 	fprintf(stderr, "  -l <level>    log level\n");
 	fprintf(stderr, "  -m <mode>     transfer mode\n");
-	fprintf(stderr, "                (bit 0: use PSPI)\n");
-	fprintf(stderr, "                (bit 1: use directGPIO)\n");
-	fprintf(stderr, "                (bit 2: use PSPI irq)\n");
+	fprintf(stderr, "                (1: PSPI mode)\n");
+	fprintf(stderr, "                (0: GPIO mode)\n");
 	fprintf(stderr, "  -f <freq>     force running at frequency (Mhz)\n");
 	fprintf(stderr, "                for PSPI mode\n");
 	fprintf(stderr, "  -s <filepath> load svf file\n");
@@ -67,8 +63,11 @@ void process_command_line(int argc, char **argv)
 		}
 		case 'm': {
 			v = atoi(optarg);
-			if (v >= 0 && v <= 7) {
-				mode = v;
+			if (v >= 0 && v <= 1) {
+				if (v == 1)
+					mode = JTAG_MODE_SPI;
+				else if (v == 0)
+					mode = JTAG_MODE_GPIO;
 			}
 			break;
 		}
@@ -128,33 +127,9 @@ JTAG_Handler* JTAG_initialize(void)
 		}
 	}
 
-	/* set master mode */
-	if (JTAG_set_cntlr_mode(state->JTAG_driver_handle, JTAGDriverState_Master) != ST_OK) {
+	/* set transfer mode */
+	if (JTAG_set_mode(state->JTAG_driver_handle, mode) != ST_OK) {
 		fprintf(stderr, "Failed to set JTAG mode to master.\n");
-		goto err;
-	}
-
-	/* set PSPI */
-	enable = mode & 0x1 ? 1 : 0;
-	printf("PSPI %s\n", enable ? "enable" : "disable");
-	if (JTAG_set_pspi(state->JTAG_driver_handle, enable) != ST_OK) {
-		fprintf(stderr, "Failed to set PSPI.\n");
-		goto err;
-	}
-
-	/* set PSPI irq */
-	enable = mode & 0x4 ? 1 : 0;
-	printf("PSPI irq %s\n", enable ? "enable" : "disable");
-	if (JTAG_set_pspi_irq(state->JTAG_driver_handle, enable) != ST_OK) {
-		fprintf(stderr, "Failed to set PSPI irq.\n");
-		goto err;
-	}
-
-	/* set directGPIO */
-	enable = mode & 0x2 ? 1 : 0;
-	printf("directGPIO %s\n", enable ? "enable" : "disable");
-	if (JTAG_set_directgpio(state->JTAG_driver_handle, enable) != ST_OK) {
-		fprintf(stderr, "Failed to set DirectGPIO.\n");
 		goto err;
 	}
 

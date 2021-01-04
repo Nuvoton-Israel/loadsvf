@@ -122,20 +122,6 @@ struct scan_field {
     uint8_t *check_mask;
 };
 
-/* legacy ioctl interface */
-#define JTAGIOC_BASE    'T'
-#define JTAG_SIOCFREQ_OLD     _IOW( JTAGIOC_BASE, 3, unsigned int)
-#define JTAG_GIOCFREQ_OLD     _IOR( JTAGIOC_BASE, 4, unsigned int)
-#define JTAG_BITBANG          _IOWR(JTAGIOC_BASE, 5, struct tck_bitbang)
-#define JTAG_SET_TAPSTATE     _IOW( JTAGIOC_BASE, 6, unsigned int)
-#define JTAG_READWRITESCAN    _IOWR(JTAGIOC_BASE, 7, struct scan_xfer)
-#define JTAG_SLAVECONTLR      _IOW( JTAGIOC_BASE, 8, unsigned int)
-#define JTAG_RUNTEST          _IOW( JTAGIOC_BASE, 9, unsigned int)
-#define JTAG_DIRECTGPIO       _IOW( JTAGIOC_BASE, 10, unsigned int)
-#define JTAG_PSPI             _IOW( JTAGIOC_BASE, 11, unsigned int)
-#define JTAG_PSPI_IRQ         _IOW( JTAGIOC_BASE, 12, unsigned int)
-
-/* ioctl interface for ASD */
 #define __JTAG_IOCTL_MAGIC	0xb2
 #define JTAG_SIOCSTATE	_IOW(__JTAG_IOCTL_MAGIC, 0, struct jtag_tap_state)
 #define JTAG_SIOCFREQ	_IOW(__JTAG_IOCTL_MAGIC, 1, unsigned int)
@@ -144,6 +130,7 @@ struct scan_field {
 #define JTAG_GIOCSTATUS _IOWR(__JTAG_IOCTL_MAGIC, 4, enum JtagStates)
 #define JTAG_SIOCMODE	_IOW(__JTAG_IOCTL_MAGIC, 5, unsigned int)
 #define JTAG_IOCBITBANG	_IOW(__JTAG_IOCTL_MAGIC, 6, unsigned int)
+#define JTAG_RUNTEST    _IOW(__JTAG_IOCTL_MAGIC, 7, unsigned int)
 
 const char *tap_state_name(tap_state_t state);
 tap_state_t tap_state_by_name(const char *name);
