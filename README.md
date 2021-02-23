@@ -30,8 +30,8 @@ LOG LEVEL:
 3: Error  
 
 **-m transfer mode:**  
-enable PSPI mode if bit 0 is set  
-enable directGPIO if bit 1 is set  
+1: PSPI mode (default if not specified)  
+0: GPIO mode  
 
 **-f frequency:**  
 force running at specific frequency in Mhz for PSPI mode.  
