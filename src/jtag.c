@@ -126,14 +126,17 @@ STATUS JTAG_shift(JTAG_Handler* state, struct scan_xfer *scan_xfer, unsigned int
 {
 	struct jtag_xfer xfer;
 	unsigned char tdio[TDI_DATA_SIZE];
-	unsigned int ptr;
+#if UINTPTR_MAX == 0xffffffff
+	__u64 ptr = (__u32)tdio;
+#else
+	__u64 ptr = (__u64)tdio;
+#endif
 	xfer.from = JTAG_STATE_CURRENT;
 	xfer.endstate = scan_xfer->end_tap_state;
 	xfer.length = scan_xfer->length;
 	xfer.type = type;
 	xfer.direction = JTAG_READ_WRITE_XFER;
-	ptr = (unsigned int)tdio;
-	xfer.tdio = (__u64)ptr;
+	xfer.tdio = ptr;
 	memcpy(tdio, scan_xfer->tdi, scan_xfer->tdi_bytes);
 	if (ioctl(state->JTAG_driver_handle, JTAG_IOCXFER, &xfer) < 0) {
 		perror("jtag shift");
