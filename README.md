@@ -29,7 +29,7 @@ LOG LEVEL:
 2: Info  
 3: Error  
 
-**-m transfer mode:**  
+**-m transfer mode:(for Poleg only)**  
 1: PSPI mode (default if not specified)  
 0: GPIO mode  
 
