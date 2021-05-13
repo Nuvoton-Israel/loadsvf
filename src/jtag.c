@@ -60,7 +60,7 @@ STATUS JTAG_set_clock_frequency(int handle, unsigned int frequency)
 {
 	unsigned long req = JTAG_SIOCFREQ;
 
-	printf("Set PSPI freq: %u\n", frequency);
+	printf("Set freq: %u\n", frequency);
 	if (ioctl(handle, req, &frequency) < 0) {
 		DBG_log(LEV_ERROR, "ioctl JTAG_SIOCFREQ failed");
 		return ST_ERR;
