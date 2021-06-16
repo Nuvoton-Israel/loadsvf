@@ -35,7 +35,7 @@ LOG LEVEL:
 
 **-f frequency:**  
 force running at specific frequency in Mhz for PSPI mode.  
-the accepted frequency is 1 ~ 25  
+the accepted frequency is 1 ~ 50  
 
 **-g:**  
 execute svf command line by line  

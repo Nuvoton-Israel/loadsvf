@@ -18,6 +18,7 @@
 int loglevel = LOG_LEVEL;
 unsigned int frequency = 0;
 int step = 0;
+unsigned long total_runtest_time = 0;
 
 static int mode = JTAG_MODE_SPI;  /* default transfer mode */
 char *svf_path = NULL;
@@ -73,7 +74,7 @@ void process_command_line(int argc, char **argv)
 		}
 		case 'f': {
 			v = atoi(optarg);
-			if (v > 0 && v <= 25) {
+			if (v > 0 && v <= MAX_FREQ) {
 				frequency = v * 1000000;
 			}
 			break;
@@ -167,6 +168,7 @@ int main(int argc, char **argv)
 	gettimeofday(&end,NULL);
 	diff = 1000 * (end.tv_sec-start.tv_sec)+ (end.tv_usec-start.tv_usec) / 1000;
 	printf("loading time is %ld ms\n",diff);
+	//printf("total runtest time is %ld ms\n", total_runtest_time / 1000);
 
 err:
 	free(svf_path);

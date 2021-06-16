@@ -7,6 +7,7 @@
 #define LEV_DEBUG	1
 #define LEV_INFO	2
 #define LEV_ERROR	3
+#define MAX_FREQ	50
 
 typedef unsigned char __u8;
 typedef unsigned long __u32;

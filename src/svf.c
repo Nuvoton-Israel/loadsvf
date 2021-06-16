@@ -33,6 +33,7 @@
 #include <stdarg.h>
 #include <inttypes.h>
 #include <ctype.h>
+#include <sys/time.h>
 #include "jtag.h"
 
 #define ERROR_OK                        (0)
@@ -50,6 +51,7 @@ extern int step;
 extern unsigned int frequency;
 extern void DBG_log(int level, const char *format, ...);
 static JTAG_Handler* jtag_handler = NULL;
+extern unsigned long total_runtest_time;
 
 /* SVF command */
 enum svf_command {
@@ -1435,6 +1437,8 @@ XXR_common:
 #if 1
 				/* FIXME handle statemove failures */
 				uint32_t min_usec = 1000000 * min_time;
+				struct timeval start,end;
+				unsigned long diff = 0;
 
 				/* enter into run_state if necessary */
 				//if (cmd_queue_cur_state != svf_para.runtest_run_state)
@@ -1442,27 +1446,26 @@ XXR_common:
 
 				/* add clocks and/or min wait */
 				if (run_count > 0) {
+					gettimeofday(&start,NULL);
 					if (!svf_nil)
 						JTAG_wait_cycles(jtag_handler, run_count);
+					gettimeofday(&end,NULL);
+					diff = 1000000 * (end.tv_sec-start.tv_sec)+ end.tv_usec-start.tv_usec;
+					total_runtest_time += diff;
 				}
 
-				if (min_usec > 0) {
+				if (min_usec > diff) {
+					min_usec -= diff;
 					if (!svf_nil) {
-						uint32_t freq = 0;
-						if (frequency)
-							freq = frequency;
-						else if (svf_para.frequency)
-							freq = svf_para.frequency;
-						if (freq > 0) {
-							uint32_t num_cycles = freq * min_time;
-							if (num_cycles) {
-								LOG_DEBUG("JTAG_wait_cycles: %u\n", num_cycles);
-								JTAG_wait_cycles(jtag_handler, num_cycles);
-							}
-						} else {
-							LOG_DEBUG("sleep %lu usec\n", min_usec);
-							usleep(min_usec);
+						gettimeofday(&start,NULL);
+						diff = 0;
+						while (min_usec > diff) {
+							usleep(1);
+							gettimeofday(&end,NULL);
+							diff = 1000000 * (end.tv_sec-start.tv_sec)+
+								end.tv_usec-start.tv_usec;
 						}
+						total_runtest_time += diff;
 					}
 				}
 
