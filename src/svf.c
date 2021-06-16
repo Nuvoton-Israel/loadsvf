@@ -247,6 +247,7 @@ static int svf_line_number;
 static int svf_getline(char **lineptr, size_t *n, FILE *stream);
 long file_offset;
 int loop;
+int loop_line_number;
 
 #define SVF_MAX_BUFFER_SIZE_TO_COMMIT   (1024 * 1024)
 static uint8_t *svf_tdi_buffer, *svf_tdo_buffer, *svf_mask_buffer;
@@ -966,6 +967,7 @@ static int svf_run_command(char *cmd_str)
 			loop = atoi(argus[1]);
 			file_offset = ftell(svf_fd);
 			loop--;
+			loop_line_number = svf_line_number;
 			break;
 		case ENDLOOP:
 			if (loop > 0) {
@@ -974,6 +976,7 @@ static int svf_run_command(char *cmd_str)
 					break;
 				} else {
 					fseek(svf_fd, file_offset, SEEK_SET);
+					svf_line_number = loop_line_number;
 					loop--;
 				}
 			}
