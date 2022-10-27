@@ -248,7 +248,7 @@ static size_t svf_command_buffer_size;
 static int svf_line_number;
 static int svf_getline(char **lineptr, size_t *n, FILE *stream);
 long file_offset;
-int loop;
+int loop = 0;
 int loop_line_number;
 
 #define SVF_MAX_BUFFER_SIZE_TO_COMMIT   (1024 * 1024)
@@ -1588,10 +1588,14 @@ XXR_common:
 			return ERROR_FAIL;
 			break;
 	}
+	if ((loop == 0) && (ERROR_OK != svf_check_tdo(false)))
+		return ERROR_FAIL;
+#if 0
 	if (svf_check_tdo_para_index >= SVF_CHECK_TDO_PARA_SIZE / 2) {
 		if (ERROR_OK != svf_check_tdo(false))
 			return ERROR_FAIL;
 	}
+#endif
 #if 0
 	/* for fast executing, execute tap if necessary */
 	/* half of the buffer is for the next command */
