@@ -499,6 +499,10 @@ int handle_svf_command(JTAG_Handler* state, char *filename)
 {
 	int command_num = 0;
 	int ret = ERROR_OK;
+	long svf_cur_pos;
+	long svf_file_size;
+	long pos;
+	int progress, tmp;
 
 	jtag_handler = state;
 	/* parse command line */
@@ -512,6 +516,11 @@ int handle_svf_command(JTAG_Handler* state, char *filename)
 		return -1;
 	} else
 		LOG_DEBUG("svf processing file: \"%s\"", filename);
+	fseek(svf_fd, 0L, SEEK_END);
+	svf_file_size = ftell(svf_fd);
+	fseek(svf_fd, 0L, SEEK_SET);
+	svf_cur_pos = 0;
+	progress = 0;
 
 	/* init */
 	svf_line_number = 0;
@@ -556,9 +565,22 @@ int handle_svf_command(JTAG_Handler* state, char *filename)
 			break;
 		}
 		command_num++;
+		if (svf_file_size > 0) {
+			pos = ftell(svf_fd);
+			if (pos > svf_cur_pos)
+				svf_cur_pos = pos;
+
+			tmp = 100 * svf_cur_pos / svf_file_size;
+			if (tmp > progress) {
+				progress = tmp;
+				printf("Progress: %d%%\r", progress);
+				fflush(stdout);
+			}
+		}
 	}
 
 	svf_check_tdo(false);
+	printf("\nDone!\n");
 free_all:
 
 	fclose(svf_fd);
