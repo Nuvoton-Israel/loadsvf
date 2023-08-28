@@ -77,15 +77,33 @@ STATUS JTAG_set_mode(int handle, unsigned int Mode)
 	return ST_OK;
 }
 
+STATUS JTAG_run_state(JTAG_Handler* state, JtagStates tap_state, unsigned int number_of_cycles)
+{
+	struct jtag_tap_state tapstate;
+
+	if (state == NULL)
+		return ST_ERR;
+
+	tapstate.reset = 0;
+	tapstate.tck = number_of_cycles;
+	tapstate.from = JTAG_STATE_CURRENT;
+	tapstate.endstate = tap_state;
+	if (ioctl(state->JTAG_driver_handle, JTAG_SIOCSTATE, &tapstate) < 0) {
+		perror("run state");
+		return ST_ERR;
+	}
+
+	return ST_OK;
+}
+
 STATUS JTAG_wait_cycles(JTAG_Handler* state, unsigned int number_of_cycles)
 {
 	if (state == NULL)
 		return ST_ERR;
 
-    if (ioctl(state->JTAG_driver_handle, JTAG_RUNTEST, number_of_cycles) < 0) {
-        perror("runtest");
-        return ST_ERR;
-    }
+	if (ioctl(state->JTAG_driver_handle, JTAG_RUNTEST, number_of_cycles) < 0) {
+		return JTAG_run_state(state, JTAG_STATE_CURRENT, number_of_cycles);
+	}
 
 	return ST_OK;
 }
@@ -102,6 +120,7 @@ STATUS JTAG_set_tap_state(JTAG_Handler* state, JtagStates tap_state)
 		return ST_ERR;
 
 	tapstate.reset = 0;
+	tapstate.tck = 0;
 	tapstate.from = JTAG_STATE_CURRENT;
 	tapstate.endstate = tap_state;
 

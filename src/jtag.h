@@ -140,6 +140,7 @@ STATUS JTAG_set_pspi_irq(int handle, unsigned int enable);
 STATUS JTAG_set_cntlr_mode(int handle, const JTAGDriverState setMode);
 STATUS JTAG_set_directgpio(int handle, unsigned int enable);
 STATUS JTAG_set_tap_state(JTAG_Handler* state, JtagStates tap_state);
+STATUS JTAG_run_state(JTAG_Handler* state, JtagStates tap_state, unsigned int tcks);
 STATUS JTAG_set_clock_frequency(int handle, unsigned int frequency);
 STATUS JTAG_set_mode(int handle, unsigned int Mode);
 STATUS JTAG_wait_cycles(JTAG_Handler* state, unsigned int number_of_cycles);
