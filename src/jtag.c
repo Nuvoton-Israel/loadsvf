@@ -150,6 +150,7 @@ STATUS JTAG_shift(JTAG_Handler* state, struct scan_xfer *scan_xfer, unsigned int
 #else
 	__u64 ptr = (__u64)tdio;
 #endif
+	memset(&xfer, 0, sizeof(xfer));
 	xfer.from = JTAG_STATE_CURRENT;
 	xfer.endstate = scan_xfer->end_tap_state;
 	xfer.length = scan_xfer->length;

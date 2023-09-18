@@ -9,9 +9,9 @@
 #define LEV_ERROR	3
 #define MAX_FREQ	50
 
-typedef unsigned char __u8;
-typedef unsigned long __u32;
-typedef unsigned long long __u64;
+typedef uint8_t __u8;
+typedef uint32_t __u32;
+typedef uint64_t __u64;
 
 typedef enum {
 	JtagTLR,
@@ -87,7 +87,7 @@ struct jtag_xfer {
 	__u8	direction;
 	__u8	from;
 	__u8	endstate;
-	__u8	padding;
+	__u32	padding;
 	__u32	length;
 	__u64	tdio;
 };
