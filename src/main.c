@@ -150,6 +150,7 @@ int main(int argc, char **argv)
 {
 	struct  timeval start, end;
 	unsigned long diff;
+	int ret = 0;
 
 	process_command_line(argc, argv);
 	if (!svf_path || !jtag_dev) {
@@ -164,7 +165,12 @@ int main(int argc, char **argv)
 	}
 
 	gettimeofday(&start,NULL);
-	handle_svf_command(jtag_handler, svf_path);
+	ret = handle_svf_command(jtag_handler, svf_path);
+	fprintf(stderr, "handle_svf_command %d\n", ret);
+	if (ret) {
+		fprintf(stderr, "Failed to handle svf command\n");
+		goto err;
+	}
 	gettimeofday(&end,NULL);
 	diff = 1000 * (end.tv_sec-start.tv_sec)+ (end.tv_usec-start.tv_usec) / 1000;
 	printf("loading time is %ld ms\n",diff);
@@ -173,5 +179,5 @@ int main(int argc, char **argv)
 err:
 	free(svf_path);
 	free(jtag_dev);
-	return 0;
+	return ret;
 }
