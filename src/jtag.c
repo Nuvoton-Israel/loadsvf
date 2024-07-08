@@ -101,11 +101,15 @@ STATUS JTAG_wait_cycles(JTAG_Handler* state, unsigned int number_of_cycles)
 	if (state == NULL)
 		return ST_ERR;
 
+#ifdef USE_LEGACY_IOCTL
 	if (ioctl(state->JTAG_driver_handle, JTAG_RUNTEST, number_of_cycles) < 0) {
 		return JTAG_run_state(state, JTAG_STATE_CURRENT, number_of_cycles);
 	}
 
 	return ST_OK;
+#else
+	return JTAG_run_state(state, JTAG_STATE_CURRENT, number_of_cycles);
+#endif
 }
 
 //

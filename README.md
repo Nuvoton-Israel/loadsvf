@@ -5,7 +5,10 @@ Takes a image in SVF format and download to FPGA or CPLD device through JTAG int
 ## Building
 
 ```bash
-./configure --host=arm-linux-gnueabi --target=arm-inux-gnueabi
+# for poleg
+./configure CFLAGS=-static --host=arm-linux-gnueabi --target=arm-inux-gnueabi --enable-legacy-ioctl
+# for arbel
+./configure CFLAGS=-static --host=aarch64-linux-gnu --target=aarch64-linux-gnu
 make
 ```
 
